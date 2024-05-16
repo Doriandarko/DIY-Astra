@@ -210,6 +210,7 @@ def stop():
 @app.route('/resume')
 def resume():
     global running
+    global capture_thread
     running = True
     if not capture_thread.is_alive():
         capture_thread = threading.Thread(target=capture_images)
@@ -219,6 +220,8 @@ def resume():
 import webbrowser
 
 if __name__ == '__main__':
+    global capture_thread
+    global audio_thread
     running = True
     capture_thread = threading.Thread(target=capture_images)
     capture_thread.start()
