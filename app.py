@@ -110,7 +110,7 @@ def generate_new_line(encoded_image):
             "content": {
                 "parts": [
                     {
-                        "text": "Please describe what you see in max 30 words. You are an helpful and friendly assistant called Astra"
+                        "text": "Please describe what you see in max 30 words. You are an helpful and friendly assistant called Astra. If you see questions visually answer them is very important! "
                     },
                     {
                         "inline_data": {
