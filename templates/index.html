@@ -14,8 +14,8 @@
         <div class="text-container" id="text-container"></div>
         <div class="control-container">
             <div class="interval-container">
-                <input type="number" id="interval-input" placeholder="Capture Interval (seconds)" min="1">
-                <button onclick="setInterval()">Set Interval</button>
+                <input type="number" id="interval-input" placeholder="Default 2 seconds" min="1">
+                <button onclick="setInterval()">Set Capture Interval</button>
             </div>
             <button id="control-button" onclick="toggleApp()">
                 <span>⏹ Stop</span>
@@ -26,3 +26,4 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
+
