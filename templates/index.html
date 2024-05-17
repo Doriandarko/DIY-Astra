@@ -12,9 +12,15 @@
             <img id="video" src="">
         </div>
         <div class="text-container" id="text-container"></div>
-        <button id="control-button" onclick="toggleApp()">
-            <span>⏹ Stop</span>
-        </button>
+        <div class="control-container">
+            <div class="interval-container">
+                <input type="number" id="interval-input" placeholder="Capture Interval (seconds)" min="1">
+                <button onclick="setInterval()">Set Interval</button>
+            </div>
+            <button id="control-button" onclick="toggleApp()">
+                <span>⏹ Stop</span>
+            </button>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
