@@ -46,6 +46,10 @@ text_queue = Queue()
 # Flag to indicate when audio playback is in progress
 audio_playing = threading.Event()
 
+# Global variables
+running = True
+capture_interval = 2  # Default interval in seconds
+
 def encode_image(image_path):
     while True:
         try:
@@ -143,33 +147,20 @@ def analyze_image(encoded_image, script):
         return ""
 
 def capture_images():
+    global capture_interval
     global script
     script = []
+    cap = cv2.VideoCapture(0)
     while running:
         try:
             ret, frame = cap.read()
             if ret:
-                pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                max_size = 250
-                ratio = max_size / max(pil_img.size)
-                new_size = tuple([int(x * ratio) for x in pil_img.size])
-                resized_img = pil_img.resize(new_size, Image.LANCZOS)
-                frame = cv2.cvtColor(np.array(resized_img), cv2.COLOR_RGB2BGR)
-
-                path = f"{folder}/frame.jpg"
-                cv2.imwrite(path, frame)
-                print("📸 Saving photo.")
-
-                encoded_image = encode_image(path)
-                print(f"Encoded image: {encoded_image[:30]}...")  # Debug print
-
-                if not encoded_image:
-                    print("Failed to encode image. Retrying in 5 seconds...")
-                    time.sleep(5)
-                    continue
-
-                socketio.emit('image', {'image': encoded_image})
+                # Encode the frame to base64
+                _, buffer = cv2.imencode('.jpg', frame)
+                encoded_image = base64.b64encode(buffer).decode('utf-8')
+                socketio.emit('stream', {'image': encoded_image})
                 
+                # Analyze the frame
                 response_text = analyze_image(encoded_image, script)
                 print(f"Jarvis's response: {response_text}")
 
@@ -193,9 +184,10 @@ def capture_images():
             else:
                 print("Failed to capture image")
 
-            time.sleep(2)
+            time.sleep(capture_interval)
         except Exception as e:
             print(f"Error in capture_images: {e}")
+    cap.release()
 
 @app.route('/')
 def index():
@@ -216,6 +208,15 @@ def resume():
         capture_thread = threading.Thread(target=capture_images)
         capture_thread.start()
     return jsonify({"status": "resumed"})
+
+@app.route('/set_interval', methods=['POST'])
+def set_interval():
+    global capture_interval
+    interval = request.json.get('interval')
+    if interval:
+        capture_interval = interval
+        return jsonify({"status": "interval updated", "interval": capture_interval})
+    return jsonify({"status": "failed", "message": "Invalid interval"}), 400
 
 import webbrowser
 
