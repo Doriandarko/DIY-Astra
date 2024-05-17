@@ -155,12 +155,28 @@ def capture_images():
         try:
             ret, frame = cap.read()
             if ret:
-                # Encode the frame to base64
-                _, buffer = cv2.imencode('.jpg', frame)
-                encoded_image = base64.b64encode(buffer).decode('utf-8')
+                # Resize and compress the image
+                pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                max_size = 250
+                ratio = max_size / max(pil_img.size)
+                new_size = tuple([int(x * ratio) for x in pil_img.size])
+                resized_img = pil_img.resize(new_size, Image.LANCZOS)
+                frame = cv2.cvtColor(np.array(resized_img), cv2.COLOR_RGB2BGR)
+
+                path = f"{folder}/frame.jpg"
+                cv2.imwrite(path, frame)
+                print("📸 Saving photo.")
+
+                encoded_image = encode_image(path)
+                print(f"Encoded image: {encoded_image[:30]}...")  # Debug print
+
+                if not encoded_image:
+                    print("Failed to encode image. Retrying in 5 seconds...")
+                    time.sleep(5)
+                    continue
+
                 socketio.emit('stream', {'image': encoded_image})
                 
-                # Analyze the frame
                 response_text = analyze_image(encoded_image, script)
                 print(f"Jarvis's response: {response_text}")
 
