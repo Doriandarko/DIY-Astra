@@ -53,8 +53,29 @@ body {
     white-space: pre-line; /* Preserve line breaks and spaces */
 }
 
-button {
+.control-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align items vertically centered */
+    width: 640px;
     margin-top: 20px;
+}
+
+.interval-container {
+    display: flex;
+    align-items: center;
+}
+
+#interval-input {
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    height: 42px; /* Same height as the buttons */
+}
+
+button {
     padding: 10px 20px;
     font-size: 16px;
     background-color: black;
@@ -65,6 +86,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 42px; /* Ensure the buttons have the same height */
 }
 
 button:hover {
