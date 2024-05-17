@@ -1,7 +1,7 @@
 var socket = io();
 var running = true;
 
-socket.on('image', function(data) {
+socket.on('stream', function(data) {
     var img = document.getElementById('video');
     img.src = 'data:image/jpeg;base64,' + data.image;
 });
@@ -9,7 +9,7 @@ socket.on('image', function(data) {
 socket.on('text', function(data) {
     var textContainer = document.getElementById('text-container');
     var newMessage = document.createElement('div');
-    newMessage.classList.add('message'); // Add the message class for styling
+    newMessage.classList.add('message');
     newMessage.textContent = data.message;
     textContainer.appendChild(newMessage);
     textContainer.scrollTop = textContainer.scrollHeight;
@@ -42,4 +42,26 @@ function toggleApp() {
                 console.error('Error resuming the app:', error);
             });
     }
+}
+
+function setInterval() {
+    var intervalInput = document.getElementById('interval-input').value;
+    fetch('/set_interval', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ interval: parseInt(intervalInput) })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'interval updated') {
+            alert('Capture interval updated to ' + data.interval + ' seconds.');
+        } else {
+            alert('Failed to update interval: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error setting interval:', error);
+    });
 }
